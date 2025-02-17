@@ -1,0 +1,49 @@
+# Ignorar archivos de Python compilados
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Entornos virtuales
+venv/
+.env/
+.venv/
+env/
+virtualenvtest/
+
+# Archivos de configuración IDE
+.idea/
+.vscode/
+*.swp
+
+# Archivos generados por SQLAlchemy
+*.db
+*.sqlite
+*.sqlite3
+universitydb_data/
+
+# Archivos de configuración de tests
+.coverage
+nosetests.xml
+pytest.xml
+*.cover
+*.tox
+*.nox
+*.coverage.*
+*.hypothesis/
+
+# Archivos de dependencias de Python
+Pipfile
+Pipfile.lock
+*.egg-info/
+dist/
+build/
+
+# Archivos de configuración de Docker
+.docker/
+docker-compose.override.yml
+
+# Archivos temporales
+*.log
+*.bak
+*.tmp
