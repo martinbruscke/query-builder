@@ -29,7 +29,13 @@ def create_all_tables(bind=None):
     Crea todas las tablas en la base de datos usando el motor proporcionado.
     Si no se proporciona un motor, se usa el motor por defecto (`engine`).
     """
-    from models import User, TeacherCourse, StudentCourse, Course,Assignment, Submission
+    from models.assignmentModel import AssignmentModel
+    from models.courseModel import Course 
+    from models.courseTag import CourseTagModel
+    from models.studentCourseModel import StudentCourseModel
+    from models.teacherModel import TeacherCourseModel
+    from models.submissionModel import Submission
+    from models.userModel import UserModel
 
     try:
         # Usa el motor proporcionado o el motor por defecto

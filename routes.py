@@ -2,7 +2,7 @@ from typing import Dict
 from fastapi import APIRouter, HTTPException, Depends
 
 from database import get_db
-from models import User
+from models.courseModel import User
 # from query_builder import QueryBuilder
 from query_builder import QueryBuilder
 from schema import Criteria
@@ -17,14 +17,14 @@ def execute_query(criteria: Dict, db: Session = Depends(get_db)):
     try:
         print(criteria)
     
-        qb = QueryBuilder(User)  # Partimos del User por default
+        qb = QueryBuilder()  # Partimos del User por default
         
         criteria = criteria["criteria"]  # Extraemos el contenido real
         
         query = qb.build(criteria) # Realizamos la construccion de la query
         
         print(f"Antes de buscar en BBDD,  query es : {query}")
-        result = db.scalars(query).all() # ejecutamos la query
+        result = db.execute(query).all() # ejecutamos la query
         print(f"Desp de buscar en BBDD,  result es : {result}")
         
         clean_results = []

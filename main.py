@@ -1,7 +1,10 @@
 from fastapi import FastAPI, HTTPException,Depends
 
-from models import User, TeacherCourse, StudentCourse, Course,Assignment, Submission
+from models.assignmentModel import AssignmentModel
+from models.courseModel import User, TeacherCourse, StudentCourse, Course,Assignment, Submission
 from database import create_all_tables, get_db
+from models.studentCourseModel import StudentCourseModel
+from models.teacherModel import TeacherCourseModel
 from routes import query_builder_routes
 from sqlalchemy.orm import Session
 
@@ -20,47 +23,65 @@ create_all_tables()
 # Endpoint para poblar la base de datos
 @app.post("/populate_db/")
 def populate_db(db: Session = Depends(get_db)):
-    # Datos de ejemplo
-    users = [
-        User(id=uuid.uuid4(), name="Alice", lastname="Smith", email="alice@example.com", phone="1234567890", is_teacher=False),
-        User(id=uuid.uuid4(), name="Bob", lastname="Brown", email="bob@example.com", phone="2345678901", is_teacher=False),
-        User(id=uuid.uuid4(), name="Charlie", lastname="Davis", email="charlie@example.com", phone="3456789012", is_teacher=False),
-        User(id=uuid.uuid4(), name="David", lastname="Evans", email="david@example.com", phone="4567890123", is_teacher=True),
-        User(id=uuid.uuid4(), name="Eve", lastname="Foster", email="eve@example.com", phone="5678901234", is_teacher=True),
-    ]
+    # Crear usuarios (estudiantes y profesores)
+    # Ejemplo de creación de un curso
+    course = Course(
+        customer_uuid=str(uuid.uuid4()),
+        course_id="course_001",
+        name="Curso de Ejemplo",
+        is_active=True,
+        created_at=int(datetime.now().timestamp()),
+        updated_at=int(datetime.now().timestamp())
+    )
+    db.add(course)
 
-    courses = [
-        Course(id=uuid.uuid4(), name="Math 101"),
-        Course(id=uuid.uuid4(), name="History 201"),
-    ]
+    # Crear múltiples estudiantes
+    for i in range(1, 9):  # Crea 8 estudiantes
+        student_course = StudentCourseModel(
+            customer_uuid=str(uuid.uuid4()),
+            course_uuid=course.uuid,  # Relación con el curso creado
+            user_uuid=str(uuid.uuid4()),  # Asignar un UUID de usuario ficticio
+            final_score="A",
+            created_at=int(datetime.now().timestamp()),
+            updated_at=int(datetime.now().timestamp())
+        )
+        db.add(student_course)
 
-    student_courses = [
-        StudentCourse(is_active=True, user_id=users[0].id, course_id=courses[0].id),
-        StudentCourse(is_active=True, user_id=users[1].id, course_id=courses[0].id),
-        StudentCourse(is_active=True, user_id=users[2].id, course_id=courses[1].id),
-    ]
+    # Crear múltiples profesores
+    for i in range(1, 9):  # Crea 8 profesores
+        teacher_course = TeacherCourseModel(
+            customer_uuid=str(uuid.uuid4()),
+            course_uuid=course.uuid,  # Relación con el curso creado
+            user_uuid=str(uuid.uuid4()),  # Asignar un UUID de usuario ficticio
+            created_at=int(datetime.now().timestamp()),
+            updated_at=int(datetime.now().timestamp())
+        )
+        db.add(teacher_course)
 
-    teacher_courses = [
-        TeacherCourse(user_id=users[3].id, course_id=courses[0].id),
-        TeacherCourse(user_id=users[4].id, course_id=courses[1].id),
-    ]
+    # Ejemplo de creación de una asignación
+    assignment = AssignmentModel(
+        customer_uuid=str(uuid.uuid4()),
+        assignment_id="assignment_001",
+        name="Tarea de Ejemplo",
+        course_uuid=course.uuid,  # Relación con el curso creado
+        created_at=int(datetime.now().timestamp()),
+        updated_at=int(datetime.now().timestamp())
+    )
+    db.add(assignment)
 
-    assignments = [
-        Assignment(id=uuid.uuid4(), title="Assignment 1", description="Math assignment", due_date=datetime.utcnow() + timedelta(days=7), course_id=courses[0].id),
-        Assignment(id=uuid.uuid4(), title="Assignment 2", description="History assignment", due_date=datetime.utcnow() + timedelta(days=7), course_id=courses[1].id),
-    ]
+    # Ejemplo de creación de una entrega
+    submission = Submission(
+        customer_uuid=str(uuid.uuid4()),
+        assignment_uuid=assignment.uuid,  # Relación con la asignación creada
+        user_uuid=str(uuid.uuid4()),  # Asignar un UUID de usuario ficticio
+        score=95.0,
+        created_at=int(datetime.now().timestamp()),
+        updated_at=int(datetime.now().timestamp())
+    )
+    db.add(submission)
 
-    submissions = [
-        Submission(id=uuid.uuid4(), user_id=users[0].id, assignment_id=assignments[0].id, submitted_at=datetime.utcnow(), content="Completed"),
-        Submission(id=uuid.uuid4(), user_id=users[1].id, assignment_id=assignments[0].id, submitted_at=datetime.utcnow(), content="Completed"),
-    ]
-
-    # Insertar datos en la base de datos
-    db.add_all(users + courses + student_courses + teacher_courses + assignments + submissions)
     db.commit()
-
-    return {"message": "Base de datos poblada con éxito"}
-
+    return {"message": "Base de datos poblada con éxito."}
 
 
 
